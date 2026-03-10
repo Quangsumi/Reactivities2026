@@ -419,3 +419,5 @@ FodyWeavers.xsd
 
 # Course assets directory
 CourseAssets/
+/backend/Reactivities/Api/reactivities.db
+/backend/Reactivities/Api/appsettings.Development.json
