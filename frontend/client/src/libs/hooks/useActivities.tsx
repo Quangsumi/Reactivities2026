@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import agent from "../api/agent";
 
-export default function useActivities() {
+export default function useActivities(id?: string) {
     const queryClient = useQueryClient();
 
     const {data: activities, isPending} = useQuery({
@@ -11,6 +11,16 @@ export default function useActivities() {
         return response.data;
         }
     })
+
+    const { isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({
+        queryKey: ['activities', id],
+        queryFn: async () => {
+            const response = await agent.get<Activity>(`/activities/${id}`);
+            return response.data;
+        },
+        //enabled: !!id //only run query if id is present
+        enabled: Boolean(id)
+    });
 
     const updateActivity = useMutation({
         mutationFn: async (activity: Activity) => {
@@ -52,6 +62,8 @@ export default function useActivities() {
         isPending,
         updateActivity,
         createActivity,
-        deleteActivity
+        deleteActivity,
+        activity,
+        isLoadingActivity
     }
 }
