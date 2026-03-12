@@ -421,3 +421,5 @@ FodyWeavers.xsd
 CourseAssets/
 /backend/Reactivities/Api/reactivities.db
 /backend/Reactivities/Api/appsettings.Development.json
+backend/Reactivities/Api/reactivities.db-shm
+backend/Reactivities/Api/reactivities.db-wal

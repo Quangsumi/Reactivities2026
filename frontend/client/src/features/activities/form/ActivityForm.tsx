@@ -1,12 +1,13 @@
 import { Paper, Typography, Box, TextField, Button } from "@mui/material";
+import useActivities from "../../../libs/hooks/useActivities";
 
 type Props = {
     activity?: Activity
     onCancelActivityForm: () => void
-    submitForm: (activity: Activity) => void
 }
 
-export default function ActivityForm ({ activity, onCancelActivityForm, submitForm }: Props) {
+export default function ActivityForm ({ activity, onCancelActivityForm}: Props) {
+    const {updateActivity, createActivity} = useActivities();
 
     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -18,10 +19,14 @@ export default function ActivityForm ({ activity, onCancelActivityForm, submitFo
             data[key] = value;
         });
 
-        // If we're editing an existing activity, include its ID in the data
-        if (activity) data.id = activity.id;
-
-        submitForm(data as unknown as Activity);
+        if (activity) { // Edit existing activity
+            data.id = activity.id
+            updateActivity.mutate(data as unknown as Activity);
+            onCancelActivityForm()
+        } else { // Create new activity
+            createActivity.mutate(data as unknown as Activity);
+            onCancelActivityForm()
+        }
     };
 
     return (
@@ -38,7 +43,13 @@ export default function ActivityForm ({ activity, onCancelActivityForm, submitFo
                 <TextField name='venue' defaultValue={activity?.venue || ''} label='Venue' />
                 <Box display='flex' justifyContent='end' gap={3}>
                     <Button color='inherit' onClick={onCancelActivityForm}>Cancel</Button>
-                    <Button type="submit" color='success' variant="contained">Submit</Button>
+                    <Button 
+                        type="submit" 
+                        color='success' 
+                        variant="contained"
+                        loading={updateActivity.isPending || createActivity.isPending}>
+                            Submit
+                    </Button>
                 </Box>
             </Box>
         </Paper>
