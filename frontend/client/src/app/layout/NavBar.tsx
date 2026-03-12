@@ -15,10 +15,18 @@ export default function NavBar() {
                             </MenuItem>
                         </Box>
                         <Box sx={{display: 'flex'}}>
-                            <MenuItem component={NavLink} to='/activities' sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                            <MenuItem 
+                                component={NavLink} 
+                                to='/activities' 
+                                end             // exact match only
+                                classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
+                                sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'}}}>
                                 Activities
                             </MenuItem>
-                            <MenuItem component={NavLink} to='/activities/create' sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                            <MenuItem 
+                                component={NavLink} to='/activities/create' 
+                                classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
+                                sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
                                 Create Activity
                             </MenuItem>
                         </Box>
