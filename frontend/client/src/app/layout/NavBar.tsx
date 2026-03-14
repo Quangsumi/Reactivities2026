@@ -39,6 +39,12 @@ export default function NavBar() {
                                 sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
                                 Counter
                             </MenuItem>
+                            <MenuItem 
+                                component={NavLink} to='/errors' 
+                                classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
+                                sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
+                                Errors
+                            </MenuItem>
                         </Box>
                         <MenuItem>
                             User Menu
