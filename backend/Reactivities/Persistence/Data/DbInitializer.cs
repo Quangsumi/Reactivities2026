@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,16 +12,39 @@ public class DbInitializer
     {
         using var scope = app.ApplicationServices.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        
         await context.Database.MigrateAsync();
-        await SeedData(context);
+        
+        await SeedUsers(userManager);
+        await SeedActivities(context);
 
     }
 
-    private static async Task SeedData(AppDbContext context)
+    private static async Task SeedUsers(UserManager<User> userManager)
+    {
+        if(!userManager.Users.Any())
+        {
+            Console.WriteLine("-----> Seeding users data");
+            var users = new List<User>()
+            {
+                new() {DisplayName = "Bob", UserName = "bob@test.com", Email = "bob@test.com"},
+                new() {DisplayName = "Tom", UserName = "tom@test.com", Email = "tom@test.com"},
+                new() {DisplayName = "Jane", UserName = "jane@test.com", Email = "jane@test.com"},
+            };
+
+            foreach (var user in users)
+            {
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+            }
+        }
+    }
+
+    private static async Task SeedActivities(AppDbContext context)
     {
         if (!context.Activities.Any()) 
         {
-            Console.WriteLine("-----> Seeding data");
+            Console.WriteLine("-----> Seeding activities data");
             var activities = new List<Activity>
             {
                 new() {
