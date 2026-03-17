@@ -1,44 +1,80 @@
-import { Paper, Typography, Box, TextField, Button } from "@mui/material";
+import { Paper, Typography, Box, Button } from "@mui/material";
 import useActivities from "../../../libs/hooks/useActivities";
 import { Link, useNavigate, useParams } from "react-router";
+import { useForm } from "react-hook-form";
+import { activitySchema, type ActivitySchema } from "../../../libs/schemas/activitySchema";
+import { zodResolver } from '@hookform/resolvers/zod'
+import CustomizedTextField from "../../../app/shared/components/CustomizedTextField";
+import CustomizedSelect from "../../../app/shared/components/CustomizedSelect";
+import { catetoryOptions } from "./categoryOptions";
+import CustomizedDateTimePicker from "../../../app/shared/components/CustomizedDateTimePicker";
+import CustomizedLocationInput from "../../../app/shared/components/CustomizedLocationInput";
+import { useEffect } from "react";
 
 export default function ActivityForm () {
+    const {control, handleSubmit, reset} = useForm<ActivitySchema>({
+        mode: 'onTouched',
+        resolver: zodResolver(activitySchema)
+    })
     const navigate = useNavigate();
     const {id} = useParams();
     const {updateActivity, createActivity, activity} = useActivities(id);
 
     const isEditMode = id && activity;
 
-    const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const data: { [key: string]: FormDataEntryValue } = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-
-        if (isEditMode) {
-            data.id = activity.id
-            await updateActivity.mutateAsync(data as unknown as Activity);
-            navigate(`/activities/${activity.id}`)
-        } else {
-            const newActivity = await createActivity.mutateAsync(data as unknown as Activity);
-            navigate(`/activities/${newActivity.id}`)
+    useEffect(() => {
+        if (activity) {
+            reset({
+                ...activity,
+                location: {
+                    city: activity.city,
+                    venue: activity.venue,
+                    latitude: activity.latitude,
+                    longitude: activity.longitude
+                }
+            });
         }
-    };
+    }, [activity, reset]);
+
+    const onSubmit = async (data: ActivitySchema) => {
+        const { location, ...rest } = data;
+        const flattenedData = { ...rest, ...location };
+        try {
+            if (activity) {
+                updateActivity.mutate({ ...activity, ...flattenedData } as Activity, {
+                    onSuccess: () => navigate(`/activities/${activity.id}`)
+                });
+            } else {
+                createActivity.mutate(flattenedData as Activity, {
+                    onSuccess: (response: Activity) => {
+                        navigate(`/activities/${response.id}`);
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onError = (error: any) => {
+        console.log(error);
+    }
 
     return (
         <Paper sx={{ borderRadius: 3, padding: 3 }}>
             <Typography variant="h5" gutterBottom color="primary">
                 {isEditMode ? "Edit activity" : "Create activity"}
             </Typography>
-            <Box component='form' display='flex' flexDirection='column' gap={3} onSubmit={handleSubmit}>
-                <TextField name='title' label='Title' defaultValue={activity?.title || ''} />
-                <TextField name='description' label='Description' defaultValue={activity?.description || ''} multiline rows={3} />
-                <TextField name='category' defaultValue={activity?.category || ''} label='Category' />
-                <TextField name='date' defaultValue={activity?.date ? new Date(activity.date).toISOString().split('T')[0] : ''} label='Date' type="date" />
-                <TextField name='city' defaultValue={activity?.city || ''} label='City' />
-                <TextField name='venue' defaultValue={activity?.venue || ''} label='Venue' />
+            <Box component='form' display='flex' flexDirection='column' gap={3} onSubmit={handleSubmit(onSubmit, onError)}>
+                <CustomizedTextField label='Title' name='title' control={control} />
+                <CustomizedTextField label='Description' name='description' control={control} multiline rows={3} />
+                <Box display='flex' gap={3}>
+                    <CustomizedSelect label='Category' name='category' items={catetoryOptions} control={control} />
+                    <CustomizedDateTimePicker label='Date' name='date' control={control} />
+                </Box>
+                <CustomizedLocationInput label="Enter location here" name="location" control={control} />
+
                 <Box display='flex' justifyContent='end' gap={3}>
                     <Button 
                         color='inherit' 

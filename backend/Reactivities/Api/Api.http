@@ -41,7 +41,7 @@ Content-Type: application/json
 POST {{Api_HostAddress}}/api/login?useCookies=true
 Content-Type: application/json
 {
-  "email": "bob@test.com",
+  "email": "quang1@abc.com",
   "password": "Pa$$w0rd"
 }
 
@@ -49,13 +49,21 @@ Content-Type: application/json
 
 POST {{Api_HostAddress}}/api/accounts/logout
 Content-Type: application/json
-{
-
-}
+{}
 
 ###
 
 GET {{Api_HostAddress}}/api/accounts/user-info
 Accept: application/json
+
+###
+
+POST {{Api_HostAddress}}/api/accounts/register
+Content-Type: application/json
+{
+  "email": "quang3@abc.com",
+  "DisplayName": "quang3",
+  "password": "Pa$$w0rd"
+}
 
 ###

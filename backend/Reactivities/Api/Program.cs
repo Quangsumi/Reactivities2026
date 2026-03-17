@@ -36,6 +36,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(opt => opt.AllowAnyHeader()
 .AllowAnyMethod()
+.AllowCredentials() // instruct browser to allow send/receive cookie from the below origins 
 .WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
 //app.UseHttpsRedirection();
@@ -45,6 +46,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // All default routes will now be /api/login, /api/register, etc.
+// This will work along side with AccountsController /api/accounts/register, ...
 app.MapGroup("api").MapIdentityApi<User>();
 
 try

@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers;
 
+[AllowAnonymous]
 public class ActivitiesController(AppDbContext context) : BaseApiController
 {
     [HttpGet]
