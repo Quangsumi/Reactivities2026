@@ -1,10 +1,20 @@
+using Application.Activities.Commands;
+using Application.Activities.Mapping;
+using Application.Activities.Repositories;
+using Application.Activities.Validators;
+using Application.Common.Behaviors;
 using Domain;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Data;
+using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +27,20 @@ builder.Services.AddControllers(opt =>
 });
 
 builder.Services.AddOpenApi();
+
 builder.Services.AddCors();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+
+    options.Cookie.SameSite = SameSiteMode.None; // default is Lax (cookies are treated as Same-Site only by browser, cookie will not be sticked)
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Required for 'None'
+
+    // Optional: If you want the cookie to last after browser close
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true; // keep user logged in indefinitely as long as they use the app
+});
+
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -27,12 +50,54 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
         opt.User.RequireUniqueEmail = true;
     }).AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
+// Clean Architecture wiring (CQRS via MediatR + FluentValidation).
+builder.Services.AddMediatR(typeof(CreateActivityCommand).Assembly);
+builder.Services.AddAutoMapper(typeof(ActivityProfile));
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityCommandValidator>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddScoped<IActivityRepository, EfActivityRepository>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Global exception handler for API errors
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        if (exception is ValidationException validationException)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/json";
+
+            var errors = validationException.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            var details = new ValidationProblemDetails(errors)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "One or more validation errors occurred."
+            };
+
+            await context.Response.WriteAsJsonAsync(details);
+            return;
+        }
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsJsonAsync(new { error = exception?.Message });
+    });
+});
 
 app.UseCors(opt => opt.AllowAnyHeader()
 .AllowAnyMethod()
