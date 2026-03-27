@@ -4,7 +4,7 @@ import useActivities from "../../../libs/hooks/useActivities";
 
 export default function ActivityList() {
     const {activities} = useActivities();
-    
+
     if(!activities) return (<Typography>No activities</Typography>)
 
     return (

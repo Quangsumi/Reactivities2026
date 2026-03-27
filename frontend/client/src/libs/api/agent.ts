@@ -10,7 +10,9 @@ const sleep = (delay: number) => {
 }
 
 const agent = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true // tell browser to attach the cookie belonging to the api domain
+                          // api also need to allow credential with front-end origin
 });
 
 agent.interceptors.request.use(config => {
@@ -20,12 +22,10 @@ agent.interceptors.request.use(config => {
 
 agent.interceptors.response.use(
     async response => {
-        await sleep(1000);
         store.uiStore.isIdle();
         return response;
     },
     async error => {
-        await sleep(1000);
         store.uiStore.isIdle(); // Ensure the busy state is reset on error
         const {data, status} = error.response;
         switch (status) {
@@ -49,7 +49,7 @@ agent.interceptors.response.use(
                 toast.error('forbidden');
                 break;
             case 404:
-                await router.navigate('/not-found');
+                router.navigate('/not-found');
                 break;
             case 500:
                 router.navigate('/server-error', {state: {error: data}})

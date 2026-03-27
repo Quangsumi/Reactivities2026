@@ -8,6 +8,9 @@ import Counter from "../../features/counter/Counter";
 import NotFound from "../../features/errors/NotFound";
 import ServerError from "../../features/errors/ServerError";
 import TestError from "../../features/errors/TestError";
+import LoginForm from "../../features/account/LoginForm";
+import RegisterForm from "../../features/account/RegisterForm";
+import RequiredAuth from "./RequiredAuth";
 
 export const router = createBrowserRouter([
     {
@@ -15,10 +18,18 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
             { path: '', element: <HomePage /> },
-            { path: 'activities', element: <ActivityDashboard /> },
-            { path: 'activities/:id', element: <ActivityDetailPage /> },
-            { path: 'activities/create', element: <ActivityForm key="createForm"/> },
-            { path: 'activities/:id/edit', element: <ActivityForm /> },
+            {
+                element: <RequiredAuth />,
+                 children: [
+                     { path: 'activities', element: <ActivityDashboard /> },
+                     { path: 'activities/:id', element: <ActivityDetailPage /> },
+                     { path: 'activities/create', element: <ActivityForm key="createForm"/> },
+                     { path: 'activities/:id/edit', element: <ActivityForm /> },
+                ]
+            },
+            { path: 'login', element: <LoginForm /> },
+            { path: 'register', element: <RegisterForm /> },
+
             { path: 'counter', element: <Counter /> },
             { path: 'errors', element: <TestError /> },
             { path: 'not-found', element: <NotFound /> },

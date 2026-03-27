@@ -42,3 +42,10 @@ type LocationIQAddress = {
     country_code: string
     neighbourhood?: string
 }
+
+type User = {
+    id: string
+    email: string
+    displayName: string
+    image?: string
+}

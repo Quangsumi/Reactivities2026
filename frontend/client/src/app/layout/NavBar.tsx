@@ -3,9 +3,12 @@ import { Box, AppBar, Toolbar, Typography, Container, MenuItem, LinearProgress }
 import { NavLink } from "react-router";
 import {Observer } from "mobx-react-lite";
 import useStore from "../../libs/hooks/useStore";
+import { useAccount } from "../../libs/hooks/useAccount";
+import UserMenu from "./UserMenu";
 
 export default function NavBar() {
     const {uiStore} = useStore();
+    const { currentUser } = useAccount();
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -27,12 +30,12 @@ export default function NavBar() {
                                 sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'}}}>
                                 Activities
                             </MenuItem>
-                            <MenuItem 
+                            {/* <MenuItem 
                                 component={NavLink} to='/activities/create' 
                                 classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
                                 sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
                                 Create Activity
-                            </MenuItem>
+                            </MenuItem> */}
                             <MenuItem 
                                 component={NavLink} to='/counter' 
                                 classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
@@ -46,9 +49,26 @@ export default function NavBar() {
                                 Errors
                             </MenuItem>
                         </Box>
-                        <MenuItem>
-                            User Menu
-                        </MenuItem>
+                        <Box>
+                            {currentUser 
+                                ? <UserMenu /> 
+                                : (
+                                    <>
+                                    <MenuItem 
+                                        component={NavLink} to='/login' 
+                                        classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
+                                        sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
+                                        Login
+                                    </MenuItem>
+                                    <MenuItem 
+                                        component={NavLink} to='/register' 
+                                        classes={({ isActive }: {isActive: boolean}) => (isActive ? 'active' : '')}
+                                        sx={{ fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold', color: 'inherit', '&.active': {color: 'yellow'} }}>
+                                        Register
+                                    </MenuItem>
+                                    </>
+                                )}
+                        </Box>
                     </Toolbar>
                 </Container>
                 <Observer>
