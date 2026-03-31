@@ -6,4 +6,3 @@ public class UpdateActivityCommand : MediatR.IRequest<ActivityDto?>
 {
     public ActivityDto Activity { get; set; } = default!;
 }
-

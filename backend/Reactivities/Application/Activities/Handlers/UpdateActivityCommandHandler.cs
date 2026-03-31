@@ -19,9 +19,8 @@ public class UpdateActivityCommandHandler : MediatR.IRequestHandler<Application.
     public async Task<ActivityDto?> Handle(Application.Activities.Commands.UpdateActivityCommand request, CancellationToken cancellationToken)
     {
         // Map DTO to entity with updated fields, then ask repository to persist.
-        var entity = _mapper.Map<Activity>(request.Activity);
-        var updated = await _repository.UpdateAsync(entity, cancellationToken);
+        var activity = _mapper.Map<Activity>(request.Activity);
+        var updated = await _repository.UpdateAsync(activity, cancellationToken);
         return updated is null ? null : _mapper.Map<ActivityDto>(updated);
     }
 }
-

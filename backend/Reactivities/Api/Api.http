@@ -3,29 +3,44 @@ Accept: application/json
 
 ###
 
+GET {{Api_HostAddress}}/api/activities/bcff89dc-1507-47e5-8ef8-02731ec12a8a
+Accept: application/json
+
+###
+
 POST {{Api_HostAddress}}/api/activities
 Content-Type: application/json
 {
-  "Title": "title 1",
-  "Description": "description xxx",
-  "Category": "category xxx",
+  "Title": "test title 1",
+  "Description": "test description xxx",
+  "Category": "test category xxx",
   "City": "city xxx",
-  "Venue": "venue xxx"
+  "Venue": "venue xxx",
+  "Latitude": 80,
+  "Longitude": 100,
+  "Date": "2026-04-30T15:34:32.2773742"
 }
 
 ###
 
-PUT {{Api_HostAddress}}/api/activities
+PUT {{Api_HostAddress}}/api/activities/12de06d9-cda4-443a-abf3-6c65103c87d3
 Content-Type: application/json
 {
-  "Id": "fc924402-e63a-4ed4-9ae8-84ef847d351f",
-  "Title": "title 111",
-  "Description": "description xxx",
-  "Category": "category xxx",
-  "City": "city xxx",
-  "Venue": "venue xxx"
+  "Id": "12de06d9-cda4-443a-abf3-6c65103c87d3",
+  "Title": "test title 1111 updated",
+  "Description": "test description 111 updated",
+  "Category": "test category 111 updated",
+  "City": "city 111 updated",
+  "Venue": "venue 111 updated",
+  "Latitude": 80,
+  "Longitude": 100,
+  "Date": "2026-04-30T15:34:32.2773742"
 }
 
+### 
+
+POST {{Api_HostAddress}}/api/activities/bcff89dc-1507-47e5-8ef8-02731ec12a8a/attend
+Content-Type: application/json
 
 ### 
 
@@ -41,7 +56,7 @@ Content-Type: application/json
 POST {{Api_HostAddress}}/api/login?useCookies=true
 Content-Type: application/json
 {
-  "email": "quang1@abc.com",
+  "email": "jane@test.com",
   "password": "Pa$$w0rd"
 }
 

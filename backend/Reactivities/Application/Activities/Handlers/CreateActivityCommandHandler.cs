@@ -1,27 +1,32 @@
 using Application.Activities.Contracts;
 using Application.Activities.Repositories;
+using Application.Activities.Commands;
 using AutoMapper;
+using MediatR;
 using Domain;
+using Application.Common.Interfaces;
 
 namespace Application.Activities.Handlers;
 
-public class CreateActivityCommandHandler : MediatR.IRequestHandler<Application.Activities.Commands.CreateActivityCommand, ActivityDto>
+public class CreateActivityCommandHandler(IActivityRepository repository
+    , IUserAccessor userAccessor
+    , IMapper mapper) : IRequestHandler<CreateActivityCommand, ActivityDto>
 {
-    private readonly IActivityRepository _repository;
-    private readonly IMapper _mapper;
-
-    public CreateActivityCommandHandler(IActivityRepository repository, IMapper mapper)
+    public async Task<ActivityDto> Handle(CreateActivityCommand request, CancellationToken cancellationToken)
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        var currentUser = await userAccessor.GetCurrentUserAsync(cancellationToken);
 
-    public async Task<ActivityDto> Handle(Application.Activities.Commands.CreateActivityCommand request, CancellationToken cancellationToken)
-    {
-        // Create new domain entity from DTO input.
-        var entity = _mapper.Map<Activity>(request.Activity);
-        await _repository.AddAsync(entity, cancellationToken);
-        return _mapper.Map<ActivityDto>(entity);
+        var activity = mapper.Map<Activity>(request.Activity);
+
+        activity.Attendees.Add(new ActivityAttendee
+        {
+            ActivityId = activity.Id,
+            UserId = currentUser.Id,
+            IsHost = true
+        });
+
+        await repository.AddAsync(activity, cancellationToken);
+        return mapper.Map<ActivityDto>(activity);
     }
 }
 

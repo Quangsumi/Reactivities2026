@@ -3,8 +3,11 @@ using Application.Activities.Mapping;
 using Application.Activities.Repositories;
 using Application.Activities.Validators;
 using Application.Common.Behaviors;
+using Application.Common.Interfaces;
+using Application.Users.Repositories;
 using Domain;
 using FluentValidation;
+using Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
@@ -41,7 +44,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true; // keep user logged in indefinitely as long as they use the app
 });
 
-
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // for SPA (React, Vue, ...) while AddDefaultIdentity for server side render (MVC/Blazor)
@@ -50,12 +52,21 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
         opt.User.RequireUniqueEmail = true;
     }).AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("IsActivityHost", policy =>
+    {
+        policy.Requirements.Add(new IsHostRequirement());
+    });
+builder.Services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+
 // Clean Architecture wiring (CQRS via MediatR + FluentValidation).
 builder.Services.AddMediatR(typeof(CreateActivityCommand).Assembly);
 builder.Services.AddAutoMapper(typeof(ActivityProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityCommandValidator>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 builder.Services.AddScoped<IActivityRepository, EfActivityRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

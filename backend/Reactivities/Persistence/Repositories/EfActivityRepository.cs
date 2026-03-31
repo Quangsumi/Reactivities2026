@@ -6,20 +6,31 @@ namespace Persistence.Repositories;
 
 public class EfActivityRepository(AppDbContext context) : IActivityRepository
 {
-    public async Task<List<Activity>> ListAsync(CancellationToken cancellationToken)
+    public async Task<List<Activity>> ListAsync(bool includeAttendees, CancellationToken cancellationToken)
     {
-        return await context.Activities.ToListAsync(cancellationToken);
+        var activities = context.Activities.AsQueryable();
+
+        if (includeAttendees)
+        {
+            activities = activities.Include(x => x.Attendees).ThenInclude(x => x.User);
+        }
+
+        return await activities.ToListAsync(cancellationToken);
     }
 
     public async Task<Activity?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
-        return await context.Activities.FindAsync([id], cancellationToken);
+        return await context.Activities
+            .Include(x => x.Attendees)
+            .ThenInclude(x => x.User)
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Activity activity, CancellationToken cancellationToken)
+    public async Task<int> AddAsync(Activity activity, CancellationToken cancellationToken)
     {
         context.Activities.Add(activity);
-        await context.SaveChangesAsync(cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Activity?> UpdateAsync(Activity activity, CancellationToken cancellationToken)
@@ -50,6 +61,11 @@ public class EfActivityRepository(AppDbContext context) : IActivityRepository
         context.Activities.Remove(dbActivity);
         await context.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    public async Task<bool> SaveChangeAsync(CancellationToken cancellationToken)
+    {
+        return await context.SaveChangesAsync(cancellationToken) > 0;
     }
 }
 

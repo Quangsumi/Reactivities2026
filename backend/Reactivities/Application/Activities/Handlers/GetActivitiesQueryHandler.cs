@@ -18,7 +18,7 @@ public class GetActivitiesQueryHandler : MediatR.IRequestHandler<Application.Act
 
     public async Task<List<ActivityDto>> Handle(Application.Activities.Queries.GetActivitiesQuery request, CancellationToken cancellationToken)
     {
-        List<Activity> entities = await _repository.ListAsync(cancellationToken);
+        List<Activity> entities = await _repository.ListAsync(includeAttendees: true, cancellationToken);
         return _mapper.Map<List<ActivityDto>>(entities);
     }
 }

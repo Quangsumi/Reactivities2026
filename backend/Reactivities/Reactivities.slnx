@@ -2,5 +2,6 @@
   <Project Path="Api/Api.csproj" />
   <Project Path="Application/Application.csproj" />
   <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" Id="66fee608-ea82-4ee0-89fa-325afb6d4444" />
   <Project Path="Persistence/Persistence.csproj" />
 </Solution>
