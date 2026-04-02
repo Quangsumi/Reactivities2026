@@ -14,7 +14,17 @@ export default function useActivities(id?: string) {
         const response = await agent.get<Activity[]>('/activities');
         return response.data;
         }, 
-        enabled: !id && location.pathname === '/activities' && !!currentUser
+        enabled: !id && location.pathname === '/activities' && !!currentUser,
+        select: data => {
+            const activities = data.map(activity => {
+                return {
+                    ...activity,
+                    isHost: activity.hostId === currentUser?.id,
+                    isGoing: activity.attendees.some(a => a.id === currentUser?.id)
+                }
+            })
+            return activities;
+        }
     })
 
     const { isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({
@@ -24,7 +34,15 @@ export default function useActivities(id?: string) {
             return response.data;
         },
         //enabled: !!id //only run query if id is present
-        enabled: Boolean(id)
+        enabled: Boolean(id),
+        select: data => {
+            const activity = {
+                ...data,
+                isHost: currentUser?.id === data.hostId,
+                isGoing: data.attendees.some(a => a.id === currentUser?.id)
+            }
+            return activity
+        }
     });
 
     const updateActivity = useMutation({
@@ -62,12 +80,25 @@ export default function useActivities(id?: string) {
         }
     })
 
+    const updateAttendee = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await agent.post(`/activities/${id}/attend`);
+            return response.data;
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['activities']
+            })
+        }
+    })
+
     return {
         activities,
         isPending,
         updateActivity,
         createActivity,
         deleteActivity,
+        updateAttendee,
         activity,
         isLoadingActivity
     }
