@@ -1,5 +1,6 @@
-﻿using Application.Common.Repositories;
+﻿using Application.Common.Interfaces;
 using Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Queries;
 
@@ -10,13 +11,13 @@ public class GetProfilePhotos
         public required string Id { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork) : MediatR.IRequestHandler<Query, ICollection<Photo>>
+    public class Handler(IApplicationDbContext context) : MediatR.IRequestHandler<Query, ICollection<Photo>>
     {
         public async Task<ICollection<Photo>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var profile = await unitOfWork.Users.GetUserWithPhotos(request.Id, cancellationToken);
-
-            return profile?.Photos ?? [];
+            return await context.Photos
+                .Where(p => p.UserId == request.Id)
+                .ToListAsync(cancellationToken);
         }
     }
 }

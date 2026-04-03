@@ -1,10 +1,11 @@
-﻿using Domain;
+﻿using Application.Common.Interfaces;
+using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;
 
-public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
+public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(options), IApplicationDbContext
 {
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
