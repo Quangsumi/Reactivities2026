@@ -1,13 +1,13 @@
 using Application.Activities.Commands;
-using Application.Activities.Mapping;
-using Application.Activities.Repositories;
 using Application.Activities.Validators;
 using Application.Common.Behaviors;
-using Application.Common.Interfaces;
-using Application.Users.Repositories;
+using Application.Common.Mapping;
+using Application.Common.Repositories;
+using Application.Common.Services;
 using Domain;
 using FluentValidation;
 using Infrastructure;
+using Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Data;
-using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +45,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
 // for SPA (React, Vue, ...) while AddDefaultIdentity for server side render (MVC/Blazor)
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
     {
@@ -60,13 +61,13 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
 
 // Clean Architecture wiring (CQRS via MediatR + FluentValidation).
-builder.Services.AddMediatR(typeof(CreateActivityCommand).Assembly);
+builder.Services.AddMediatR(typeof(CreateActivity).Assembly);
 builder.Services.AddAutoMapper(typeof(ActivityProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityCommandValidator>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-builder.Services.AddScoped<IUserAccessor, UserAccessor>();
-builder.Services.AddScoped<IActivityRepository, EfActivityRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

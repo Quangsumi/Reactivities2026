@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Activities.Validators;
 
-public class DeleteActivityCommandValidator : AbstractValidator<DeleteActivityCommand>
+public class DeleteActivityCommandValidator : AbstractValidator<DeleteActivity.Command>
 {
     public DeleteActivityCommandValidator()
     {

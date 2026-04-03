@@ -1,5 +1,5 @@
 using Application.Activities.Commands;
-using Application.Activities.Contracts;
+using Application.Activities.Dtos;
 using Application.Activities.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,14 +12,14 @@ public class ActivitiesController(IMediator mediator) : BaseApiController
     [HttpGet]
     public async Task<ActionResult<List<ActivityDto>>> GetActivities()
     {
-        var activities = await mediator.Send(new GetActivitiesQuery());
+        var activities = await mediator.Send(new GetActivities.Query());
         return Ok(activities);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ActivityDto>> GetActivity(string id)
     {
-        var activity = await mediator.Send(new GetActivityQuery { Id = id });
+        var activity = await mediator.Send(new GetActivity.Query { Id = id });
         if (activity is null) return NotFound();
         return Ok(activity);
     }
@@ -29,7 +29,7 @@ public class ActivitiesController(IMediator mediator) : BaseApiController
     public async Task<ActionResult> EditActivity(string id, ActivityDto activity)
     {
         activity.Id = id;
-        var updated = await mediator.Send(new UpdateActivityCommand { Activity = activity });
+        var updated = await mediator.Send(new UpdateActivity.Command { Activity = activity });
         if (updated is null) return NotFound();
         return NoContent();
     }
@@ -37,7 +37,7 @@ public class ActivitiesController(IMediator mediator) : BaseApiController
     [HttpPost]
     public async Task<ActionResult> CreateActivity(ActivityDto activity)
     {
-        var created = await mediator.Send(new CreateActivityCommand { Activity = activity });
+        var created = await mediator.Send(new CreateActivity.Command { Activity = activity });
 
         return CreatedAtAction(nameof(GetActivity), new { id = created.Id }, created);
     }
@@ -46,7 +46,7 @@ public class ActivitiesController(IMediator mediator) : BaseApiController
     [Authorize(Policy = "IsActivityHost")]
     public async Task<ActionResult> DeleteActivity(string id)
     {
-        var deleted = await mediator.Send(new DeleteActivityCommand { Id = id });
+        var deleted = await mediator.Send(new DeleteActivity.Command { Id = id });
         if (!deleted) return NotFound();
         return NoContent();
     }
@@ -54,7 +54,7 @@ public class ActivitiesController(IMediator mediator) : BaseApiController
     [HttpPost("{id}/attend")]
     public async Task<ActionResult> UpdateAttenace(string id)
     {
-        var updated = await mediator.Send(new UpdateAttendanceCommand { ActivityId = id });
+        var updated = await mediator.Send(new UpdateAttendance.Command { ActivityId = id });
         if (!updated) return BadRequest();
         return NoContent();
     }

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Activities.Validators;
 
-public class CreateActivityCommandValidator : AbstractValidator<CreateActivityCommand>
+public class CreateActivityCommandValidator : AbstractValidator<CreateActivity.Command>
 {
     public CreateActivityCommandValidator()
     {

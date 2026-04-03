@@ -1,6 +1,6 @@
 using Domain;
 
-namespace Application.Activities.Repositories;
+namespace Application.Common.Repositories;
 
 public interface IActivityRepository
 {

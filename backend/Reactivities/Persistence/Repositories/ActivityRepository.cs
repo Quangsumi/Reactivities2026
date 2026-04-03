@@ -1,10 +1,10 @@
-using Application.Activities.Repositories;
+using Application.Common.Repositories;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class EfActivityRepository(AppDbContext context) : IActivityRepository
+public class ActivityRepository(AppDbContext context) : IActivityRepository
 {
     public async Task<List<Activity>> ListAsync(bool includeAttendees, CancellationToken cancellationToken)
     {

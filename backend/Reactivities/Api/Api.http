@@ -82,3 +82,35 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{Api_HostAddress}}/api/profiles/de5054c6-b441-4d4e-802c-d86acc192ae3
+Accept: application/json
+
+###
+
+GET {{Api_HostAddress}}/api/profiles/de5054c6-b441-4d4e-802c-d86acc192ae3/photos
+Accept: application/json
+
+###
+
+POST {{Api_HostAddress}}/api/profiles/add-photo
+Content-Type: multipart/form-data; boundary=boundary-string
+
+--boundary-string
+Content-Disposition: form-data; name="file"; filename="unnamed.jpg"
+Content-Type: image/jpeg
+
+< O:/something/unnamed.jpg
+--boundary-string--
+
+###
+
+PUT {{Api_HostAddress}}/api/profiles/set-main/e218abdd-3386-48fe-8806-31c1a7445d95
+Accept: application/json
+
+###
+
+DELETE {{Api_HostAddress}}/api/profiles/photos/0ed11e38-9d4e-4c8f-b12e-c82d71f08fee
+Accept: application/json
+
+###
