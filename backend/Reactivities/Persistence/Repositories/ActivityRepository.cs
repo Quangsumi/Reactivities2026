@@ -1,32 +1,10 @@
 using Application.Common.Repositories;
 using Domain;
-using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
 public class ActivityRepository(AppDbContext context) : IActivityRepository
 {
-    public async Task<List<Activity>> ListAsync(bool includeAttendees, CancellationToken cancellationToken)
-    {
-        var activities = context.Activities.AsQueryable();
-
-        if (includeAttendees)
-        {
-            activities = activities.Include(x => x.Attendees).ThenInclude(x => x.User);
-        }
-
-        return await activities.ToListAsync(cancellationToken);
-    }
-
-    public async Task<Activity?> GetByIdAsync(string id, CancellationToken cancellationToken)
-    {
-        return await context.Activities
-            .Include(x => x.Attendees)
-            .ThenInclude(x => x.User)
-            .Where(x => x.Id == id)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
     public async Task<int> AddAsync(Activity activity, CancellationToken cancellationToken)
     {
         context.Activities.Add(activity);

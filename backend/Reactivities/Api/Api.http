@@ -11,7 +11,7 @@ Accept: application/json
 POST {{Api_HostAddress}}/api/activities
 Content-Type: application/json
 {
-  "Title": "test title 1",
+  "Title": "test title 2222222222",
   "Description": "test description xxx",
   "Category": "test category xxx",
   "City": "city xxx",
@@ -27,7 +27,7 @@ PUT {{Api_HostAddress}}/api/activities/12de06d9-cda4-443a-abf3-6c65103c87d3
 Content-Type: application/json
 {
   "Id": "12de06d9-cda4-443a-abf3-6c65103c87d3",
-  "Title": "test title 1111 updated",
+  "Title": "test title 1111 updated updated updated",
   "Description": "test description 111 updated",
   "Category": "test category 111 updated",
   "City": "city 111 updated",
@@ -39,7 +39,7 @@ Content-Type: application/json
 
 ### 
 
-POST {{Api_HostAddress}}/api/activities/bcff89dc-1507-47e5-8ef8-02731ec12a8a/attend
+POST {{Api_HostAddress}}/api/activities/ff5c065a-1fbe-424a-92b4-d73d84e94fa3/attend
 Content-Type: application/json
 
 ### 
@@ -56,7 +56,7 @@ Content-Type: application/json
 POST {{Api_HostAddress}}/api/login?useCookies=true
 Content-Type: application/json
 {
-  "email": "jane@test.com",
+  "email": "bob@test.com",
   "password": "Pa$$w0rd"
 }
 
@@ -110,7 +110,7 @@ Accept: application/json
 
 ###
 
-DELETE {{Api_HostAddress}}/api/profiles/photos/0ed11e38-9d4e-4c8f-b12e-c82d71f08fee
+DELETE {{Api_HostAddress}}/api/profiles/photos/e218abdd-3386-48fe-8806-31c1a7445d95
 Accept: application/json
 
 ###

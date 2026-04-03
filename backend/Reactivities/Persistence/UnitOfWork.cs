@@ -6,14 +6,10 @@ namespace Persistence;
 public class UnitOfWork(AppDbContext context) : IUnitOfWork, IAsyncDisposable
 {
     private IActivityRepository? _activities;
-    private IUserRepository? _users;
     private IPhotoRepository? _photos;
 
     public IActivityRepository Activities =>
         _activities ??= new ActivityRepository(context);
-
-    public IUserRepository Users =>
-        _users ??= new UserRepository(context);
 
     public IPhotoRepository Photos =>
         _photos ??= new PhotoRepository(context);

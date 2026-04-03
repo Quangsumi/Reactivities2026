@@ -2,6 +2,7 @@ using Application.Common.Repositories;
 using Application.Common.Services;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Activities.Commands;
 
@@ -12,16 +13,16 @@ public class UpdateAttendance
         public required string ActivityId { get; set; }
     }
 
-    public class Handler(IUnitOfWork unitOfWork, IUserService userAccessor): IRequestHandler<Command, bool>
+    public class Handler(IUnitOfWork unitOfWork, IApplicationDbContext dbContext, IUserService userService): IRequestHandler<Command, bool>
     {
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
             // TODO: Implement Result Pattern instead of throwing exceptions in application layer
 
-            var activity = await unitOfWork.Activities.GetByIdAsync(request.ActivityId, cancellationToken)
+            var activity = await dbContext.Activities.FirstOrDefaultAsync(a => a.Id == request.ActivityId, cancellationToken: cancellationToken)
                 ?? throw new Exception("Activity not found");
 
-            var user = await userAccessor.GetCurrentUserAsync(includePhotos: false, cancellationToken)
+            var user = await userService.GetCurrentUserAsync(includePhotos: false, cancellationToken)
                 ?? throw new Exception("User not found");
 
             var attendance = activity.Attendees.FirstOrDefault(a => a.UserId == user.Id);

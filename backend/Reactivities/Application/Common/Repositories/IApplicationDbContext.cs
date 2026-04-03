@@ -1,7 +1,7 @@
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Common.Interfaces;
+namespace Application.Common.Repositories;
 
 public interface IApplicationDbContext
 {

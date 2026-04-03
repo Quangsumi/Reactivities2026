@@ -2,11 +2,12 @@
 using Application.Common.Services;
 using Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Infrastructure.Services;
 
-public class UserService(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork) : IUserService
+public class UserService(IHttpContextAccessor httpContextAccessor, IApplicationDbContext dbContext) : IUserService
 {
     public async Task<User> GetCurrentUserAsync(bool includePhotos, CancellationToken cancellationToken)
     {
@@ -20,11 +21,11 @@ public class UserService(IHttpContextAccessor httpContextAccessor, IUnitOfWork u
 
         if (includePhotos)
         {
-            user = await unitOfWork.Users.GetUserWithPhotos(userId, cancellationToken);
+            user = await dbContext.Users.Include(u => u.Photos).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken: cancellationToken);
         }
         else
         {
-            user = await unitOfWork.Users.GetUser(userId, cancellationToken);
+            user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken: cancellationToken);
         }
 
         if (user == null)
