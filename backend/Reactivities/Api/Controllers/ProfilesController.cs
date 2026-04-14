@@ -30,6 +30,13 @@ public class ProfilesController(IMediator mediator) : BaseApiController
         return Ok(rs);
     }
 
+    [HttpPut]
+    public async Task<IActionResult> UpdateProfile(UpdateProfile.Command command)
+    {
+        var rs = await mediator.Send(command);
+        return Ok(rs);
+    }
+
     [HttpPut("set-main/{photoId}")]
     public async Task<IActionResult> SetMain(string photoId)
     {

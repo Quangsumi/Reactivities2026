@@ -83,12 +83,12 @@ Content-Type: application/json
 
 ###
 
-GET {{Api_HostAddress}}/api/profiles/de5054c6-b441-4d4e-802c-d86acc192ae3
+GET {{Api_HostAddress}}/api/profiles/3a98981f-d923-4a8a-9f7f-2dac96a6839f
 Accept: application/json
 
 ###
 
-GET {{Api_HostAddress}}/api/profiles/de5054c6-b441-4d4e-802c-d86acc192ae3/photos
+GET {{Api_HostAddress}}/api/profiles/3a98981f-d923-4a8a-9f7f-2dac96a6839f/photos
 Accept: application/json
 
 ###
@@ -103,6 +103,14 @@ Content-Type: image/jpeg
 < O:/something/unnamed.jpg
 --boundary-string--
 
+###
+
+PUT {{Api_HostAddress}}/api/profiles/3a98981f-d923-4a8a-9f7f-2dac96a6839f
+Content-Type: application/json
+{
+  "DisplayName": "Bobify",
+  "Bio": "This is Bob bio"
+}
 ###
 
 PUT {{Api_HostAddress}}/api/profiles/set-main/e218abdd-3386-48fe-8806-31c1a7445d95
