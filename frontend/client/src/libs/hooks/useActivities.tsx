@@ -17,10 +17,12 @@ export default function useActivities(id?: string) {
         enabled: !id && location.pathname === '/activities' && !!currentUser,
         select: data => {
             const activities = data.map(activity => {
+                const host = activity.attendees.find(a => a.id === activity.hostId)
                 return {
                     ...activity,
                     isHost: activity.hostId === currentUser?.id,
-                    isGoing: activity.attendees.some(a => a.id === currentUser?.id)
+                    isGoing: activity.attendees.some(a => a.id === currentUser?.id),
+                    hostImageUrl: host?.imageUrl
                 }
             })
             return activities;
@@ -36,10 +38,12 @@ export default function useActivities(id?: string) {
         //enabled: !!id //only run query if id is present
         enabled: Boolean(id),
         select: data => {
+            const host = data.attendees.find(x => x.id === data.hostId);
             const activity = {
                 ...data,
                 isHost: currentUser?.id === data.hostId,
-                isGoing: data.attendees.some(a => a.id === currentUser?.id)
+                isGoing: data.attendees.some(a => a.id === currentUser?.id),
+                hostImageUrl: host?.imageUrl
             }
             return activity
         }

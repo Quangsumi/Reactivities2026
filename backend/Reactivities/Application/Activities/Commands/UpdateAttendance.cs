@@ -19,7 +19,9 @@ public class UpdateAttendance
         {
             // TODO: Implement Result Pattern instead of throwing exceptions in application layer
 
-            var activity = await dbContext.Activities.FirstOrDefaultAsync(a => a.Id == request.ActivityId, cancellationToken: cancellationToken)
+            var activity = await dbContext.Activities
+                .Include(x => x.Attendees)
+                .FirstOrDefaultAsync(a => a.Id == request.ActivityId, cancellationToken: cancellationToken)
                 ?? throw new Exception("Activity not found");
 
             var user = await userService.GetCurrentUserAsync(includePhotos: false, cancellationToken)
