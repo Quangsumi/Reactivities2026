@@ -21,5 +21,6 @@ public class ActivityDto
     public double Longitude { get; set; }
 
     public ICollection<UserProfileDto> Attendees { get; set; } = [];
+    public ICollection<CommentDto> Comments { get; set; } = [];
 
 }

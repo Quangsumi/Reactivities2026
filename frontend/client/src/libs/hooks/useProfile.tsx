@@ -54,11 +54,11 @@ export const useProfile = (id?: string) => {
 
             // same result but trade-off performance
             // await queryClient.invalidateQueries({ queryKey: ['profile', id] });
-            queryClient.setQueryData(['profile', id], (profile: Profile) => {
-                if (!profile) return profile;
+            queryClient.setQueryData(['profile', id], (data: Profile) => {
+                if (!data) return data;
                 return {
-                    ...profile,
-                    imageUrl: profile.imageUrl ?? photo.url
+                    ...data,
+                    imageUrl: data.imageUrl ?? photo.url
                 }
             });
         }
@@ -71,10 +71,10 @@ export const useProfile = (id?: string) => {
         onSuccess: (_, profile) => {
             // same result but trade-off performance
             // await queryClient.invalidateQueries({ queryKey: ['user'] });
-            queryClient.setQueryData(['user'], (user: User) => {
-                if (!user) return user;
+            queryClient.setQueryData(['user'], (oldUser: User) => {
+                if (!oldUser) return oldUser;
                 return {
-                    ...user,
+                    ...oldUser,
                     displayName: profile.displayName,
                     bio: profile.bio
                 }
@@ -82,10 +82,10 @@ export const useProfile = (id?: string) => {
     
             // same result but trade-off performance
             // await queryClient.invalidateQueries({ queryKey: ['profile', id] });
-            queryClient.setQueryData(['profile', id], (profile: Profile) => {
-                if (!profile) return profile;
+            queryClient.setQueryData(['profile', id], (oldProfile: Profile) => {
+                if (!oldProfile) return oldProfile;
                 return {
-                    ...profile,
+                    ...oldProfile,
                     displayName: profile.displayName,
                     bio: profile.bio
                 }
@@ -101,20 +101,20 @@ export const useProfile = (id?: string) => {
 
             // same result but trade-off performance
             // await queryClient.invalidateQueries({ queryKey: ['user'] });
-            queryClient.setQueryData(['user'], (user: User) => {
-                if (!user) return user;
+            queryClient.setQueryData(['user'], (data: User) => {
+                if (!data) return data;
                 return {
-                    ...user,
+                    ...data,
                     imageUrl: photo.url
                 }
             });
 
             // same result but trade-off performance
             // await queryClient.invalidateQueries({ queryKey: ['profile', id] });
-            queryClient.setQueryData(['profile', id], (profile: Profile) => {
-                if (!profile) return profile;
+            queryClient.setQueryData(['profile', id], (data: Profile) => {
+                if (!data) return data;
                 return {
-                    ...profile,
+                    ...data,
                     imageUrl: photo.url
                 }
             });

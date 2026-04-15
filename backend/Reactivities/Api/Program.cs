@@ -1,3 +1,4 @@
+using Api.SignalR;
 using Application.Activities.Commands;
 using Application.Activities.Validators;
 using Application.Common.Behaviors;
@@ -43,8 +44,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true; // keep user logged in indefinitely as long as they use the app
 });
 
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 // for SPA (React, Vue, ...) while AddDefaultIdentity for server side render (MVC/Blazor)
@@ -126,6 +127,8 @@ app.MapControllers();
 // All default routes will now be /api/login, /api/register, etc.
 // This will work along side with AccountsController /api/accounts/register, ...
 app.MapGroup("api").MapIdentityApi<User>();
+
+app.MapHub<CommentHub>("/comments");
 
 try
 {

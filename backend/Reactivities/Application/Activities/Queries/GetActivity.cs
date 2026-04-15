@@ -18,10 +18,12 @@ public class GetActivity
     {
         public async Task<ActivityDto?> Handle(Query request, CancellationToken cancellationToken)
         {
-            return await context.Activities
+            var rs = await context.Activities
                 .Where(x => x.Id == request.Id)
                 .ProjectTo<ActivityDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
+
+            return rs;
         }
     }
 }
