@@ -118,6 +118,9 @@ app.UseCors(opt => opt.AllowAnyHeader()
 .AllowCredentials() // instruct browser to allow send/receive cookie from the below origins 
 .WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -129,6 +132,7 @@ app.MapControllers();
 app.MapGroup("api").MapIdentityApi<User>();
 
 app.MapHub<CommentHub>("/comments");
+app.MapFallbackToController("Index", "Fallback");
 
 try
 {

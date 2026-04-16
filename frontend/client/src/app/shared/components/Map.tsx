@@ -19,9 +19,8 @@ type Props = {
 }
 
 export default function Map({position, venue}: Props) {
-    console.log(position);
     return (
-        <MapContainer center={position} zoom={13} scrollWheelZoom={true} style={{ height: "100%" }}>
+        <MapContainer style={{ height: "100%" }}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
             <Marker position={position}>
                 <Popup>
