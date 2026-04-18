@@ -57,6 +57,20 @@ public class AccountsController(SignInManager<User> signInManager, IConfiguratio
         return Ok();
     }
 
+    [HttpPost("change-password")]
+    public async Task<ActionResult> ChangePassword(ChangePasswordDto passwordDto)
+    {
+        var user = await signInManager.UserManager.GetUserAsync(User);
+
+        if (user == null) return Unauthorized();
+
+        var result = await signInManager.UserManager.ChangePasswordAsync(user, passwordDto.CurrentPassword, passwordDto.NewPassword);
+
+        if (result.Succeeded) return Ok();
+
+        return BadRequest(result.Errors.First().Description);
+    }
+
     [AllowAnonymous]
     [HttpGet("user-info")]
     public async Task<ActionResult> GetUserInfo()
