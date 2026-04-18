@@ -78,3 +78,9 @@ type ChatComment = {
     displayName: string;
     imageUrl?: string;
 }
+
+type ResetPassword = {
+  email: string
+  resetCode: string
+  newPassword: string
+}

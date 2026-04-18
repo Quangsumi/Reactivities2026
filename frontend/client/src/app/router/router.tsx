@@ -13,6 +13,9 @@ import RegisterForm from "../../features/account/RegisterForm";
 import RequiredAuth from "./RequiredAuth";
 import ProfilePage from "../../features/profiles/ProfilePage";
 import VerifyEmail from "../../features/account/VerifyEmail";
+import ForgotPasswordForm from "../../features/account/ForgotPasswordForm";
+import ResetPasswordForm from "../../features/account/ResetPasswordForm";
+import ChangePasswordForm from "../../features/account/ChangePasswordForm";
 
 export const router = createBrowserRouter([
     {
@@ -28,11 +31,14 @@ export const router = createBrowserRouter([
                      { path: 'activities/create', element: <ActivityForm key="createForm"/> },
                      { path: 'activities/:id/edit', element: <ActivityForm /> },
                      { path: 'profiles/:id', element: <ProfilePage /> },
+                     { path: 'change-password', element: <ChangePasswordForm /> },
                 ]
             },
             { path: 'login', element: <LoginForm /> },
             { path: 'register', element: <RegisterForm /> },
             { path: 'confirm-email', element: <VerifyEmail /> },
+            { path: 'forgot-password', element: <ForgotPasswordForm /> },
+            { path: 'reset-password', element: <ResetPasswordForm /> },
 
             { path: 'counter', element: <Counter /> },
             { path: 'errors', element: <TestError /> },

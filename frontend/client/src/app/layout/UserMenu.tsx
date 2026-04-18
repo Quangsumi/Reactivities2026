@@ -1,7 +1,7 @@
 import { useAccount } from '../../libs/hooks/useAccount';
 import { useState } from "react";
 import { Avatar, Box, Button, Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
-import { Add, Logout, Person } from "@mui/icons-material";
+import { Add, Logout, Password, Person } from "@mui/icons-material";
 import { Link } from "react-router";
 
 export default function UserMenu() {
@@ -40,6 +40,10 @@ export default function UserMenu() {
                 <MenuItem component={Link} to={`/profiles/${currentUser?.id}`} onClick={() => setAnchorEl(null)}>
                     <ListItemIcon><Person /></ListItemIcon>
                     <ListItemText>My profile</ListItemText>
+                </MenuItem>
+                 <MenuItem component={Link} to={'/change-password'} onClick={() => setAnchorEl(null)}>
+                    <ListItemIcon><Password /></ListItemIcon>
+                    <ListItemText>Change password</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => {
