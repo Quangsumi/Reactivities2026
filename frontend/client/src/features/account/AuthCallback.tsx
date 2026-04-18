@@ -1,0 +1,53 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router"
+import { useAccount } from "../../libs/hooks/useAccount";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { GitHub } from "@mui/icons-material";
+
+export default function AuthCallback() {
+    const {fetchGithubToken} = useAccount();
+    const fetched = useRef(false);
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [searchParams] = useSearchParams()
+    const code = searchParams.get('code');
+    
+    useEffect(() => {
+        if(!code || fetched.current) return;
+        
+        fetched.current = true;
+        fetchGithubToken.mutateAsync(code)
+            .then(() => navigate('/activities'))
+            .catch((error) => {
+                console.log(error);
+                setLoading(false);
+            })
+    })
+
+    if(!code) return <Typography>Problem authenticating with GitHub</Typography>
+
+    return (
+        <Paper
+            sx={{
+                height: 400,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 3,
+                gap: 3,
+                maxWidth: 'md',
+                mx: 'auto',
+                borderRadius: 3
+            }}
+        >
+            <Box display='flex' alignItems='center' justifyContent='center' gap={3}>
+                <GitHub fontSize="large" />
+                <Typography variant="h4">Logging in with GitHub</Typography>
+            </Box>
+            { loading ? <CircularProgress /> : <Typography color="error">Problem authenticating with GitHub</Typography>
+
+            }
+        </Paper>
+    )
+}

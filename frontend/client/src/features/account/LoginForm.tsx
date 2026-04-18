@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CustomizedTextField from "../../app/shared/components/CustomizedTextField";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router";
-import { LockOpen } from "@mui/icons-material";
+import { GitHub, LockOpen } from "@mui/icons-material";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -51,6 +51,12 @@ export default function LoginForm() {
         console.log(error);
     }
 
+    const loginWithGithub = () => {
+        const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+        const redirectUrl = import.meta.env.VITE_REDIRECT_URI;
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirectUri=${redirectUrl}&scope=read:user user:email`
+    }
+
     return (
         <Paper
             component='form'
@@ -75,7 +81,18 @@ export default function LoginForm() {
                 loading={isSubmitting}
                 disabled={!isValid}
                 variant="contained"
-                size="large">Login</Button>
+                size="large">
+                    Login
+            </Button>
+            <Button
+                type='button'
+                startIcon={<GitHub />}
+                sx={{background: 'black'}}
+                onClick={loginWithGithub}
+                variant="contained"
+                size="large">
+                    Login with Github
+            </Button>
             {notVerified 
                 ? <Box display='flex' flexDirection='column' justifyContent='center'>
                     <Typography textAlign='center' color="error">
