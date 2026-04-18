@@ -1,21 +1,27 @@
 import {useAccount} from "../../libs/hooks/useAccount";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Box, Button, Paper, Typography} from "@mui/material";
+import {Box, Button, Paper, Typography } from "@mui/material";
 import {LockOpen} from "@mui/icons-material";
 import {registerSchema, type RegisterSchema} from "../../libs/schemas/registerSchema";
 import { Link } from "react-router";
 import CustomizedTextField from "../../app/shared/components/CustomizedTextField";
+import { useState } from "react";
+import RegisterSuccess from "./RegisterSuccess";
 
 export default function RegisterForm() {
     const {registerUser} = useAccount();
+    const [ registerSuccess, setRegisterSuccess ] = useState(false);
     const {control, handleSubmit, setError, formState: {isValid, isSubmitting}} = useForm<RegisterSchema>({
         mode: 'onTouched',
         resolver: zodResolver(registerSchema)
     });
 
+    const email = useWatch({control, name: 'email'});
+
     const onSubmit = async (data: RegisterSchema) => {
         await registerUser.mutateAsync(data, {
+            onSuccess: () => {setRegisterSuccess(true)},
             onError: (error) => {
                 if (Array.isArray(error)) {
                     error.forEach((err) => {
@@ -31,7 +37,10 @@ export default function RegisterForm() {
     const onError = (error: any) => console.log(error)
 
     return (
-        <Paper component='form' onSubmit={handleSubmit(onSubmit, onError)}
+        <>
+        {registerSuccess 
+            ? <RegisterSuccess email={email} /> 
+            : <Paper component='form' onSubmit={handleSubmit(onSubmit, onError)}
                sx={{
                    display: 'flex',
                    flexDirection: 'column',
@@ -60,6 +69,7 @@ export default function RegisterForm() {
                     Sign in
                 </Typography>
             </Typography>
-        </Paper>
-    );
+        </Paper>   
+    }
+    </>)
 }

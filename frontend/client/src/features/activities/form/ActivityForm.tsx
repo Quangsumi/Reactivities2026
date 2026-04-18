@@ -77,6 +77,7 @@ export default function ActivityForm () {
 
                 <Box display='flex' justifyContent='end' gap={3}>
                     <Button 
+                        onClick={() => navigate(-1)}
                         color='inherit' 
                         component={Link} 
                         to={isEditMode ? `/activities/${activity.id}` : "/activities"}

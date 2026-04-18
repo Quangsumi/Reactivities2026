@@ -9,6 +9,15 @@ export const useAccount = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
+    const { data: currentUser, isLoading: loadingUserInfo } = useQuery({
+        queryKey: ['user'],
+        queryFn: async () => {
+            const response = await agent.get<User>('/accounts/user-info');
+            return response.data
+        },
+        // enabled: !queryClient.getQueryData(['user'])
+    });
+
     const loginUser = useMutation({
         mutationFn: async (data: LoginSchema) => {
             await agent.post('/login?useCookies=true', data);
@@ -42,14 +51,22 @@ export const useAccount = () => {
         }
     })
 
-    const { data: currentUser, isLoading: loadingUserInfo } = useQuery({
-        queryKey: ['user'],
-        queryFn: async () => {
-            const response = await agent.get<User>('/accounts/user-info');
-            return response.data
+    const verifyEmail = useMutation({
+        mutationFn: async({userId, code}: {userId: string, code: string}) => {
+            await agent.get(`/confirmEmail?userId=${userId}&code=${code}`);
+        }
+    })
+
+    const resendConfirmationEmail  = useMutation({
+        mutationFn: async({userId, email}: {userId?: string | null, email?: string | null}) => {
+            await agent.get(`/accounts/resend-confirm-email`, {
+                params: { userId, email }
+            });
         },
-        // enabled: !queryClient.getQueryData(['user'])
-    });
+        onSuccess: () => {
+            toast.success('Email sent - please check your inbox');
+        }
+    })
 
     return {
         currentUser,
@@ -57,5 +74,7 @@ export const useAccount = () => {
         loginUser,
         registerUser,
         logoutUser,
+        verifyEmail,
+        resendConfirmationEmail
     }
 }
