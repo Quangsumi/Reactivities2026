@@ -45,6 +45,10 @@ agent.interceptors.response.use(
             }
                 break;
             case 401:
+                console.log(data);
+                if(data.detail === 'NotAllowed') {
+                    throw new Error(data.detail);
+                }
                 toast.error('unauthorised');
                 break;
             case 403:

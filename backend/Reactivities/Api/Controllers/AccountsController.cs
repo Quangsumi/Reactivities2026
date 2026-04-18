@@ -3,10 +3,13 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Api.Controllers;
 
-public class AccountsController(SignInManager<User> signInManager) : BaseApiController
+public class AccountsController(SignInManager<User> signInManager, IConfiguration config, IEmailSender<User> emailSender) : BaseApiController
 {
     [AllowAnonymous]
     [HttpPost("register")]
@@ -21,7 +24,12 @@ public class AccountsController(SignInManager<User> signInManager) : BaseApiCont
 
         var result = await signInManager.UserManager.CreateAsync(user, registerDto.Password);
 
-        if (result.Succeeded) return Ok();
+        if (result.Succeeded)
+        {
+            await SendConfirmationEmailAsync(user, registerDto.Email);
+
+            return Ok();
+        }
 
         foreach (var error in result.Errors)
         {
@@ -29,6 +37,24 @@ public class AccountsController(SignInManager<User> signInManager) : BaseApiCont
         }
 
         return ValidationProblem();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("resend-confirm-email")]
+    public async Task<ActionResult> ResendConfirmEmail(string? email, string? userId)
+    {
+        if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(userId))
+        {
+            return BadRequest("Email or user id must be provided");
+        }
+
+        var user = await signInManager.UserManager.Users.FirstOrDefaultAsync(x => x.Email == email || x.Id == userId);
+
+        if (user == null || string.IsNullOrEmpty(user.Email)) return BadRequest("User not found");
+
+        await SendConfirmationEmailAsync(user, user.Email);
+
+        return Ok();
     }
 
     [AllowAnonymous]
@@ -57,5 +83,15 @@ public class AccountsController(SignInManager<User> signInManager) : BaseApiCont
         await signInManager.SignOutAsync();
 
         return NoContent();
+    }
+
+    private async Task SendConfirmationEmailAsync(User user, string email)
+    {
+        var code = await signInManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+        var confirmEmailUrl = $"{config["ClientAppUrl"]}/confirm-email?userId={user.Id}&code={code}";
+
+        await emailSender.SendConfirmationLinkAsync(user, email, confirmEmailUrl);
     }
 }
